@@ -1,4 +1,3 @@
-# myy601-Operating-Systems
 # Key-Value Store Synchronization
 
 ## Overview
@@ -18,8 +17,9 @@ This repository contains the implementation of a multi-threaded synchronization 
 * sst.c: Solved deadlocks related to thread scheduling during SST file compactions down the tree levels.
 
 ## Evaluation & Performance
-* **Read-heavy workloads:** Throughput increases significantly as the number of threads increases, because read operations happen in parallel without writers blocking them.
-* **Write-heavy workloads:** Show increased latency and lower throughput due to exclusive writer locking and the overhead of mandatory memory compactions to the hard drive. However, this trade-off is completely necessary to guarantee data integrity and avoid starvation.
+* **Read-Heavy Workloads:** Throughput increases significantly as the number of threads increases, because read operations happen in parallel without writers blocking them.
+* **Write-Heavy Workloads:** Show increased latency and lower throughput due to exclusive writer locking and the overhead of mandatory memory compactions to the hard drive. However, this trade-off is completely necessary to guarantee data integrity and avoid starvation.
+* **Mixed (Read-Write) Workloads:** As the percentage of write operations increases compared to reads, overall throughput drops and latency increases. This occurs for two reasons: firstly, more frequent compactions temporarily block both readers and writers, and secondly, the writer-priority mechanism forces readers to wait. This prioritization is directly reflected in the increased read latency, as waiting writers are always allowed to enter the critical section before the waiting readers. Overall, the implementation is highly efficient for read-heavy workloads, and while speed is sacrificed in balanced or write-heavy scenarios, it successfully prevents starvation.
 
 ## Author
 * **Ioannis Drivas** (AM: 5216)

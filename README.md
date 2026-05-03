@@ -22,4 +22,4 @@ This repository contains the implementation of a multi-threaded synchronization 
 * **Mixed (Read-Write) Workloads:** As the percentage of write operations increases compared to reads, overall throughput drops and latency increases. This occurs for two reasons: firstly, more frequent compactions temporarily block both readers and writers, and secondly, the writer-priority mechanism forces readers to wait. This prioritization is directly reflected in the increased read latency, as waiting writers are always allowed to enter the critical section before the waiting readers. Overall, the implementation is highly efficient for read-heavy workloads, and while speed is sacrificed in balanced or write-heavy scenarios, it successfully prevents starvation.
 
 ## Author
-* **Ioannis Drivas** (AM: 5216)
+* **Ioannis Drivas** 

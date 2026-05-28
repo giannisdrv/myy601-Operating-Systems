@@ -21,5 +21,28 @@ This repository contains the implementation of a multi-threaded synchronization 
 * **Write-Heavy Workloads:** Show increased latency and lower throughput due to exclusive writer locking and the overhead of mandatory memory compactions to the hard drive. However, this trade-off is completely necessary to guarantee data integrity and avoid starvation.
 * **Mixed (Read-Write) Workloads:** As the percentage of write operations increases compared to reads, overall throughput drops and latency increases. This occurs for two reasons: firstly, more frequent compactions temporarily block both readers and writers, and secondly, the writer-priority mechanism forces readers to wait. This prioritization is directly reflected in the increased read latency, as waiting writers are always allowed to enter the critical section before the waiting readers. Overall, the implementation is highly efficient for read-heavy workloads, and while speed is sacrificed in balanced or write-heavy scenarios, it successfully prevents starvation.
 
+# FAT File System Journaling (LKL)
+
+## Overview
+This section contains the implementation of a custom logging mechanism (journal) for the FAT file system, developed as the second part of an Operating Systems university assignment. The core objective is to track and record changes made to essential file system structures (such as inodes, clusters, and dentries) during operations executed via Linux Kernel Library (LKL) tools, specifically `cptofs`. All file system modifications are recorded and exported to a host file located at `/tmp/journal.txt`.
+
+## Features
+* **FAT Structure Tracing:** Injects `printk()` statements across fundamental FAT and VFS operations (e.g., super operations, address space operations, file operations, and inode operations) to thoroughly trace the execution flow of the file system.
+* **Custom Journaling System:** Captures modifications during cluster allocations/deallocations, directory entry updates, and file creation/deletion processes, persisting them to an external log file.
+* **Metadata Tracking:** Logs detailed parameters including `i_start`, `i_logstart`, file sizes, and allocated/freed directory slots to create a highly accurate timeline of file system events.
+* **Extern Host Calls:** Utilizes standard host system calls (`open`, `write`, `close`) declared as `extern` to manage the global file descriptor and bypass native LKL system call limitations encountered during development.
+
+## Architecture Details
+* `inode.c`: Intercepts `fat_fill_inode`, `fat_write_inode`, and `fat_fill_super`. It logs inode metadata (e.g., initialization states and sizes), written inodes, and superblock details (free clusters, FAT type, cluster size).
+* `dir.c`: Modifies `fat_add_entries` and `fat_remove_entries` to record the parent directory's inode and the exact number of directory slots allocated or freed during file operations.
+* `fatent.c`: Logs cluster-level modifications by recording specific cluster allocations via `fat_alloc_clusters` and deallocations via `fat_free_clusters`.
+* `file.c`: Intercepts the `fat_free` function to log the first cluster and first logical cluster metadata.
+* `namei_vfat.c`: Tracks file and directory namespace operations by logging file creations (`vfat_create`), directory creations (`vfat_mkdir`), directory/file deletions (`vfat_rmdir`, `vfat_unlink`), and file lookups (`vfat_lookup`).
+
+## Evaluation & Performance
+* **First-Time File Copy (`cptofs`):** When copying a new file (e.g., `lklfuse.c`) into the FAT system, the journal successfully outputs the expected logical sequence: superblock initialization via `fat_fill_super`, directory slot allocation, inode initialization (starting at `i_start=0`), file creation, subsequent cluster allocations, and finally, writing both the parent and child inodes.
+* **Overwriting Existing Files:** When executing the copy for an already existing file, the journal accurately records a different path. It logs the `vfat_lookup` identifying the file, loads the valid inode metadata (confirming the original file size), frees the old clusters, allocates new ones, and successfully replaces the content.
+* **Implementation Limitations:** The direct integration of native LKL system calls (such as `lkl_sys_open`, `lkl_sys_write`) was unsuccessful. The current working implementation relies on a fallback using standard `extern` host calls. A theoretical architectural fix would involve embedding the journal's file descriptor (`fd`) directly into the `msdos_sb_info` struct inside `fat.h` to cleanly utilize the LKL environment.
+
 ## Author
 * **Ioannis Drivas** 

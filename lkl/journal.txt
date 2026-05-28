@@ -1,0 +1,18 @@
+JOURNAL - fat_fill_super: fat_bits=16 cluster_size=8192 fat_start=16 fat_length=160 free_clusters=-1 prev_free=2
+JOURNAL - fat_fill_super: fat_bits=16 cluster_size=8192 fat_start=16 fat_length=160 free_clusters=-1 prev_free=2
+JOURNAL - fat_add_entries: Added 2 entries in directory Inode 1
+JOURNAL - fat_fill_inode: Inode 3 i_start=0 i_logstart=0 i_size=0 
+JOURNAL - vfat_create: Created file 'lklfuse.c' in directory Inode 1
+JOURNAL - fat_alloc_clusters: Inode 3 allocated cluster 3. Free clusters: -1
+JOURNAL - fat_alloc_clusters: Inode 3 allocated cluster 4. Free clusters: -1
+JOURNAL - fat_write_inode: Wrote Inode 1, Size (i_size): 16384 bytes
+JOURNAL - fat_write_inode: Wrote Inode 3, Size (i_size): 14192 bytes
+JOURNAL - fat_fill_super: fat_bits=16 cluster_size=8192 fat_start=16 fat_length=160 free_clusters=-1 prev_free=2
+JOURNAL - vfat_lookup: Found 'lklfuse.c' in directory Inode 1
+JOURNAL - fat_fill_inode: Inode 3 i_start=3 i_logstart=3 i_size=14192 
+JOURNAL - fat_free: i_start: 3, i_logstart: 3
+JOURNAL - fat_free_clusters: Inode 3 freed cluster 4. Free clusters: -1
+JOURNAL - fat_free_clusters: Inode 3 freed cluster 268435455. Free clusters: -1
+JOURNAL - fat_alloc_clusters: Inode 3 allocated cluster 3. Free clusters: -1
+JOURNAL - fat_alloc_clusters: Inode 3 allocated cluster 4. Free clusters: -1
+JOURNAL - fat_write_inode: Wrote Inode 3, Size (i_size): 14192 bytes
